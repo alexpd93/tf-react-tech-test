@@ -100,9 +100,12 @@ function App() {
       </div>
 
       <div className="filter-controls">
+        <label>
+          Filter By:
+        </label>
         {/* Prioriy filter */}
         <label>
-          Filter Priority:
+          Priority:
         </label>
         <select
           value={filters.priority}
