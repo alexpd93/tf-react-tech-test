@@ -3,7 +3,7 @@
 // You're welcome to split this into multiple components if you'd like!
 
 import { useState, useEffect } from 'react';
-import { Task } from './types';
+import { Task, Priority } from './types';
 import { getTasks, createTask, updateTask, deleteTask } from './api';
 
 function App() {
@@ -11,6 +11,13 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskPriority, setNewTaskPriority] = useState<Priority>('low')
+
+  const priorityConfig = {
+  high: { label: 'High', icon: '🔴', className: 'priority-high' },
+  medium: { label: 'Medium', icon: '🟡', className: 'priority-medium' },
+  low: { label: 'Low', icon: '🟢', className: 'priority-low' },
+};
 
   // Fetch tasks on mount
   useEffect(() => {
@@ -29,9 +36,14 @@ function App() {
   // TODO: Customise this — add priority, due dates, or anything else you like!
   const handleAddTask = async () => {
     if (!newTaskTitle.trim()) return;
-    const task = await createTask({ title: newTaskTitle, completed: false });
-    setTasks((prev) => [...prev, task]);
-    setNewTaskTitle('');
+    try {
+      const task = await createTask({ title: newTaskTitle, priority: newTaskPriority, completed: false });
+      setTasks((prev) => [...prev, task]);
+      setNewTaskTitle('');
+      setNewTaskPriority('low');
+    } catch(error) {
+      setError('Failed to create task')
+    }
   };
 
   // TODO: Expand this if you add extra fields to update
@@ -61,6 +73,14 @@ function App() {
           onChange={(e) => setNewTaskTitle(e.target.value)}
           placeholder="Add a new task..."
         />
+        <select
+          value={newTaskPriority}
+          onChange={(e) => setNewTaskPriority(e.target.value as Priority)}
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
         <button onClick={handleAddTask}>Add</button>
       </div>
 
@@ -69,17 +89,24 @@ function App() {
         <p>No tasks yet. Add one above!</p>
       ) : (
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          {tasks.map((task) => (
+          {tasks.map((task) => { 
+            const priorityInfo = task.priority ? priorityConfig[task.priority] : null;
+            return (
             <li key={task.id} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
               <span style={{ textDecoration: task.completed ? 'line-through' : 'none', flex: 1 }}>
                 {task.title}
               </span>
+              {priorityInfo && (
+            <span className={priorityInfo.className}>
+            {priorityInfo.icon} {priorityInfo.label}
+            </span>
+          )}
               <button onClick={() => handleToggleComplete(task)}>
                 {task.completed ? 'Undo' : 'Complete'}
               </button>
               <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
             </li>
-          ))}
+          )})}
         </ul>
       )}
     </div>
