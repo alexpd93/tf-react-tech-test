@@ -6,32 +6,43 @@ import { useState, useEffect } from 'react';
 import { Task, Priority } from './types';
 import { getTasks, createTask, updateTask, deleteTask } from './api';
 
-function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [newTaskPriority, setNewTaskPriority] = useState<Priority>('low')
-
-  const priorityConfig = {
+const priorityConfig = {
   high: { label: 'High', icon: '🔴', className: 'priority-high' },
   medium: { label: 'Medium', icon: '🟡', className: 'priority-medium' },
   low: { label: 'Low', icon: '🟢', className: 'priority-low' },
 };
 
+const defaultFilters = {
+  priority: 'all' as Priority | 'all',
+  completed: 'all' as 'all' | 'true' | 'false'
+}
+
+function App() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskPriority, setNewTaskPriority] = useState<Priority>('low');
+  const [filters, setFilters] = useState(defaultFilters);
+
   // Fetch tasks on mount
+  const loadTasks = async () => {
+    try {
+      setLoading(true);
+      const priority = filters.priority === 'all' ? undefined : filters.priority;
+      const completed = filters.completed === 'all' ? undefined : filters.completed === 'true';
+      const data = await getTasks(priority, completed);
+      setTasks(data);
+    } catch {
+      setError('Failed to load tasks');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    void (async () => {
-      try {
-        const data = await getTasks();
-        setTasks(data);
-      } catch {
-        setError('Failed to load tasks');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    loadTasks();
+  }, [filters]);
 
   // TODO: Customise this — add priority, due dates, or anything else you like!
   const handleAddTask = async () => {
@@ -41,7 +52,7 @@ function App() {
       setTasks((prev) => [...prev, task]);
       setNewTaskTitle('');
       setNewTaskPriority('low');
-    } catch(error) {
+    } catch (error) {
       setError('Failed to create task')
     }
   };
@@ -57,6 +68,10 @@ function App() {
     await deleteTask(id);
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
+
+  const updateFilter = (key: keyof typeof filters, value: string | boolean) => {
+    setFilters(prev => ({ ...prev, [key]: value }))
+  }
 
   if (loading) return <p>Loading tasks...</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -84,29 +99,62 @@ function App() {
         <button onClick={handleAddTask}>Add</button>
       </div>
 
+      <div className="filter-controls">
+        {/* Prioriy filter */}
+        <label>
+          Filter Priority:
+        </label>
+        <select
+          value={filters.priority}
+          onChange={(e) => updateFilter('priority', e.target.value)}
+        >
+          <option value="all">All</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+
+        {/* Completion filter */}
+        <label>
+          Status:
+        </label>
+        <select
+          value={filters.completed}
+          onChange={(e) => updateFilter('completed', e.target.value)}
+        >
+          <option value="all">All</option>
+          <option value={'true'}>Completed</option>
+          <option value={'false'}>Incomplete</option>
+        </select>
+        <button onClick={() => setFilters(defaultFilters)}>
+          Clear Filters
+        </button>
+      </div>
+
       {/* TODO: Style this list — make it your own! */}
       {tasks.length === 0 ? (
         <p>No tasks yet. Add one above!</p>
       ) : (
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          {tasks.map((task) => { 
+          {tasks.map((task) => {
             const priorityInfo = task.priority ? priorityConfig[task.priority] : null;
             return (
-            <li key={task.id} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
-              <span style={{ textDecoration: task.completed ? 'line-through' : 'none', flex: 1 }}>
-                {task.title}
-              </span>
-              {priorityInfo && (
-            <span className={priorityInfo.className}>
-            {priorityInfo.icon} {priorityInfo.label}
-            </span>
-          )}
-              <button onClick={() => handleToggleComplete(task)}>
-                {task.completed ? 'Undo' : 'Complete'}
-              </button>
-              <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
-            </li>
-          )})}
+              <li key={task.id} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ textDecoration: task.completed ? 'line-through' : 'none', flex: 1 }}>
+                  {task.title}
+                </span>
+                {priorityInfo && (
+                  <span className={priorityInfo.className}>
+                    {priorityInfo.icon} {priorityInfo.label}
+                  </span>
+                )}
+                <button onClick={() => handleToggleComplete(task)}>
+                  {task.completed ? 'Undo' : 'Complete'}
+                </button>
+                <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>

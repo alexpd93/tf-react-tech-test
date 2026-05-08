@@ -3,7 +3,7 @@
 // They are already wired up and working — you can focus on the UI and server logic.
 // TODO: If you add new endpoints to the server, add matching functions here.
 
-import type { Task, NewTask, UpdateTask } from './types';
+import type { Task, NewTask, UpdateTask, Priority } from './types';
 
 const BASE_URL = 'http://localhost:3001/api';
 
@@ -15,8 +15,13 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export const getTasks = async (): Promise<Task[]> => {
-  const res = await fetch(`${BASE_URL}/tasks`);
+export const getTasks = async (priority?: Priority, completed?: boolean): Promise<Task[]> => {
+  const params = new URLSearchParams();
+
+  if (priority) params.append('priority', priority);
+  if (completed !== undefined) params.append('completed', completed.toString());
+
+  const res = await fetch(`${BASE_URL}/tasks?${params.toString()}`);
   return handleResponse<Task[]>(res);
 };
 
