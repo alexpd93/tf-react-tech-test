@@ -19,22 +19,6 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type Priority = 'low' | 'medium' | 'high';
-
-interface Task {
-  id: string;
-  title: string;
-  completed: boolean;
-  createdAt: string;
-  priority?: Priority;
-}
-
-// ─── In-memory store ──────────────────────────────────────────────────────────
-
-let tasks: Task[] = [];
-
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
 // GET /api/tasks — return all tasks
