@@ -9,8 +9,8 @@ const BASE_URL = 'http://localhost:3001/api';
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    const message = await res.text().catch(() => 'Unknown error');
-    throw new Error(`API error ${res.status}: ${message}`);
+    const errorBody = await res.json().catch(() => ({ error: 'Unknown error' }));
+    throw errorBody;
   }
   return res.json() as Promise<T>;
 }
