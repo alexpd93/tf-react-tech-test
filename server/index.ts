@@ -10,7 +10,8 @@
 
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import { v4 as uuidv4 } from 'uuid';
+import prisma from './db';
+import { Priority, Prisma, Task } from './generated/client'
 
 const app = express();
 const PORT = 3001;
@@ -37,29 +38,60 @@ let tasks: Task[] = [];
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
 // GET /api/tasks — return all tasks
-app.get('/api/tasks', (_req: Request, res: Response) => {
-  res.json(tasks);
+app.get('/api/tasks', async (req: Request, res: Response) => {
+  const { priority, completed } = req.query;
+
+  try {
+    const tasks: Task[] = await prisma.task.findMany({
+      where: {
+        ...(priority && { priority: priority as Priority }),
+        ...(completed !== undefined && { completed: completed === 'true' })
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Failed to fetch tasks' })
+  }
 });
 
 // POST /api/tasks — create a new task
-app.post('/api/tasks', (req: Request, res: Response) => {
-  const { title, priority } = req.body as { title?: string; priority?: Priority };
-
-  if (!title || typeof title !== 'string' || title.trim() === '') {
-    res.status(400).json({ error: 'title is required and must be a non-empty string' });
-    return;
+app.post('/api/tasks', async (req: Request, res: Response) => {
+  const { title, priority } = req.body as { title: string; priority: Priority }
+  const errors = {
+    title: '',
+    priority: ''
   }
 
-  const newTask: Task = {
-    id: uuidv4(),
-    title: title.trim(),
-    completed: false,
-    createdAt: new Date().toISOString(),
-    ...(priority && { priority }),
-  };
+  if (!title || typeof title !== 'string' || title.trim() === '') {
+    errors.title = 'Title is required.'
+  }
 
-  tasks.push(newTask);
-  res.status(201).json(newTask);
+  if (!priority || !Object.values(Priority).includes(priority as Priority)) {
+    errors.priority = 'Invalid or missing priority. Priority must be low, medium or high.'
+  }
+
+  if (Object.values(errors).some(error => error !== '')) {
+    return res.status(400).json(errors)
+  }
+
+  try {
+    const newTask: Task = await prisma.task.create({
+      data: {
+        title: title.trim(),
+        priority: priority as Priority,
+        completed: false,
+      }
+    })
+
+    res.status(201).json(newTask)
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).json({ error: 'Failed to create task' })
+  }
 });
 
 // PATCH /api/tasks/:id — update a task
