@@ -15,6 +15,8 @@ export interface Task {
 export type NewTask = Omit<Task, 'id' | 'createdAt'>;
 
 // Used when updating a task
+export type UpdateTask = Partial<NewTask>;
+
 export interface ValidationError {
   title?: string;
   priority?: string;
