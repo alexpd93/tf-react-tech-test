@@ -3,7 +3,7 @@
 // You're welcome to split this into multiple components if you'd like!
 
 import { useState, useEffect } from 'react';
-import { Task, Priority } from './types';
+import { Task, Priority, ValidationError } from './types';
 import { getTasks, createTask, updateTask, deleteTask } from './api';
 
 const priorityConfig = {
@@ -26,10 +26,10 @@ function App() {
   const [filters, setFilters] = useState(defaultFilters);
   const [fieldErrors, setFieldErrors] = useState<{ title?: string, priority?: string } | null>(null);
 
-  // Fetch tasks on mount
+  // Fetch tasks on mount and when filters are applied
   const loadTasks = async () => {
     try {
-      setLoading(true);
+      if (tasks.length === 0) setLoading(true);
       const priority = filters.priority === 'all' ? undefined : filters.priority;
       const completed = filters.completed === 'all' ? undefined : filters.completed === 'true';
       const data = await getTasks(priority, completed);
@@ -81,7 +81,8 @@ function App() {
     setFilters(prev => ({ ...prev, [key]: value }))
   }
 
-  if (loading) return <p>Loading tasks...</p>;
+  const isFiltered = filters.priority !== defaultFilters.priority || filters.completed !== defaultFilters.completed;
+
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
@@ -155,10 +156,20 @@ function App() {
       </div>
 
       {/* TODO: Style this list — make it your own! */}
+      {loading && <p>Loading tasks...</p>}
       {tasks.length === 0 ? (
-        <p>No tasks yet. Add one above!</p>
+        isFiltered ? (
+          <div style={{ textAlign: 'center', padding: '20px' }}>
+            <p>No tasks match your selected filters.</p>
+          </div>
+        ) : (
+          (
+            // 2. If no filters are active, the database is actually empty
+            <p>No tasks yet. Add one above!</p>
+          )
+        )
       ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
+        < ul style={{ listStyle: 'none', padding: 0 }}>
           {tasks.map((task) => {
             const priorityInfo = task.priority ? priorityConfig[task.priority] : null;
             return (
