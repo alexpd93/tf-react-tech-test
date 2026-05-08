@@ -8,7 +8,7 @@ export interface Task {
   title: string;
   completed: boolean;
   createdAt: string;
-  priority?: Priority; // Bonus field - optional
+  priority: Priority;
 }
 
 // Used when creating a new task (no id or createdAt yet)
