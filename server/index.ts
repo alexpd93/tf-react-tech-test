@@ -95,32 +95,69 @@ app.post('/api/tasks', async (req: Request, res: Response) => {
 });
 
 // PATCH /api/tasks/:id — update a task
-app.patch('/api/tasks/:id', (req: Request, res: Response) => {
-  const { id } = req.params;
-  const index = tasks.findIndex((t) => t.id === id);
+app.patch('/api/tasks/:id', async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { title, completed, priority } = req.body
 
-  if (index === -1) {
-    res.status(404).json({ error: `Task with id "${id}" not found` });
-    return;
+  const errors = {
+    title: '',
+    priority: '',
+    completed: ''
   }
 
-  const updates = req.body as Partial<Omit<Task, 'id' | 'createdAt'>>;
-  tasks[index] = { ...tasks[index], ...updates };
-  res.json(tasks[index]);
+  if (title !== undefined && (typeof title !== 'string' || title.trim() === '')) {
+    errors.title = 'Title is required.'
+  }
+
+  if (completed !== undefined && typeof completed !== 'boolean') {
+    errors.completed = 'Completed status must be true or false.'
+  }
+
+  if (priority !== undefined && !Object.values(Priority).includes(priority as Priority)) {
+    errors.priority = 'Invalid priority. Priority must be low, medium or high.'
+  }
+
+  if (Object.values(errors).some(error => error !== '')) {
+    return res.status(400).json(errors)
+  }
+
+  try {
+    const updatedTask: Task = await prisma.task.update({
+      where: { id },
+      data: {
+        ...(title !== undefined && { title: title.trim() }),
+        ...(completed !== undefined && { completed }),
+        ...(priority !== undefined && { priority: priority as Priority })
+      }
+    })
+
+    res.status(200).json(updatedTask)
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return res.status(404).json({ error: `Task with id "${id}" not found.` })
+    }
+
+    console.error('Error updating task:', error)
+    res.status(500).json({ error: 'Failed to update task.' })
+  }
 });
 
 // DELETE /api/tasks/:id — delete a task
-app.delete('/api/tasks/:id', (req: Request, res: Response) => {
+app.delete('/api/tasks/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  const index = tasks.findIndex((t) => t.id === id);
 
-  if (index === -1) {
-    res.status(404).json({ error: `Task with id "${id}" not found` });
-    return;
+  try {
+    await prisma.task.delete({
+      where: { id }
+    })
+
+    res.status(204).send()
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return res.status(404).json({ error: `Task with id "${id}" not found.` })
+    }
+    res.status(500).json({ error: 'Failed to delete task' })
   }
-
-  tasks = tasks.filter((t) => t.id !== id);
-  res.status(204).send();
 });
 
 // ─── Start ────────────────────────────────────────────────────────────────────
