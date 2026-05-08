@@ -24,6 +24,7 @@ function App() {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState<Priority>('low');
   const [filters, setFilters] = useState(defaultFilters);
+  const [fieldErrors, setFieldErrors] = useState<{ title?: string, priority?: string } | null>(null);
 
   // Fetch tasks on mount
   const loadTasks = async () => {
@@ -46,14 +47,21 @@ function App() {
 
   // TODO: Customise this — add priority, due dates, or anything else you like!
   const handleAddTask = async () => {
-    if (!newTaskTitle.trim()) return;
+    setFieldErrors(null);
+    setError(null);
+
     try {
       const task = await createTask({ title: newTaskTitle, priority: newTaskPriority, completed: false });
       setTasks((prev) => [...prev, task]);
       setNewTaskTitle('');
       setNewTaskPriority('low');
     } catch (error) {
-      setError('Failed to create task')
+      const err = error as ValidationError;
+      if (err.title || err.priority) {
+        setFieldErrors(err)
+      } else {
+        setError('Something went wrong')
+      }
     }
   };
 
@@ -88,6 +96,12 @@ function App() {
           onChange={(e) => setNewTaskTitle(e.target.value)}
           placeholder="Add a new task..."
         />
+        {/* 2. Show the specific title error message if it exists */}
+        {fieldErrors?.title && (
+          <span style={{ color: 'red', fontSize: '12px', fontWeight: 'bold' }}>
+            {fieldErrors.title}
+          </span>
+        )}
         <select
           value={newTaskPriority}
           onChange={(e) => setNewTaskPriority(e.target.value as Priority)}
@@ -96,6 +110,12 @@ function App() {
           <option value="medium">Medium</option>
           <option value="high">High</option>
         </select>
+        {/* 3. Show priority error (rare, but good for completeness) */}
+        {fieldErrors?.priority && (
+          <span style={{ color: 'red', fontSize: '12px', fontWeight: 'bold' }}>
+            {fieldErrors.priority}
+          </span>
+        )}
         <button onClick={handleAddTask}>Add</button>
       </div>
 
