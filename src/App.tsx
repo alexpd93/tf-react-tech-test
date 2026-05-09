@@ -25,6 +25,7 @@ function App() {
   const [newTaskPriority, setNewTaskPriority] = useState<Priority>('low');
   const [filters, setFilters] = useState(defaultFilters);
   const [fieldErrors, setFieldErrors] = useState<{ title?: string, priority?: string } | null>(null);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
   // Fetch tasks on mount and when filters are applied
   const loadTasks = async () => {
@@ -73,8 +74,19 @@ function App() {
 
   // TODO: Add a confirmation step, or an undo feature if you like!
   const handleDeleteTask = async (id: string) => {
-    await deleteTask(id);
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+    if (confirmingId !== id) {
+      setConfirmingId(id);
+      return;
+    }
+
+    try {
+      await deleteTask(id);
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+      setConfirmingId(null)
+    } catch (error) {
+      setError('Failed to delete task.')
+    }
+
   };
 
   const updateFilter = (key: keyof typeof filters, value: string | boolean) => {
@@ -185,7 +197,12 @@ function App() {
                 <button onClick={() => handleToggleComplete(task)}>
                   {task.completed ? 'Undo' : 'Complete'}
                 </button>
-                <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+                <button style={{
+                  backgroundColor: confirmingId === task.id ? '#e53e3e' : '',
+                  color: confirmingId === task.id ? 'white' : ''
+                }}
+                  onMouseLeave={() => setConfirmingId(null)}
+                  onClick={() => handleDeleteTask(task.id)}>{confirmingId === task.id ? 'Confirm Delete' : 'Delete'}</button>
               </li>
             )
           })}
