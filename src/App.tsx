@@ -49,7 +49,7 @@ function App() {
 
     try {
       const task = await createTask({ title: newTaskTitle, priority: newTaskPriority, completed: false });
-      setTasks((prev) => [...prev, task]);
+      setTasks((prev) => [task, ...prev]);
       setNewTaskTitle('');
       setNewTaskPriority('low');
     } catch (error) {
