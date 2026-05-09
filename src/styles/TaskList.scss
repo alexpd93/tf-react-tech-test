@@ -1,0 +1,33 @@
+@import 'variables';
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty-state {
+  padding: 48px 20px;
+  text-align: center;
+  background-color: transparent;
+  border: 2px dashed $border; 
+  border-radius: $radius;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    color: $text-muted;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &#tasks-empty-filtered {
+    border-color: rgba($warning, 0.2);
+    p { color: darken($warning, 10%); }
+  }
+}

@@ -8,6 +8,7 @@ import TaskFilters from './components//TaskFilters';
 import TaskList from './components/TaskList';
 import { Task, Priority, ValidationError } from './types';
 import { getTasks, createTask, updateTask, deleteTask } from './api';
+import './styles/App.scss';
 
 export const defaultFilters = {
   priority: 'all' as Priority | 'all',
@@ -93,35 +94,39 @@ function App() {
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: 24 }}>
-      <h1>Task Manager</h1>
+    <div className="app-wrapper">
+      <main className="app-container">
 
-      <TaskForm
-        title={newTaskTitle}
-        setTitle={setNewTaskTitle}
-        onAdd={handleAddTask}
-        errors={fieldErrors}
-        priority={newTaskPriority}
-        setPriority={setNewTaskPriority}
-      />
+        <header className="app-container__header">
+          <h1>Task Manager</h1>
+        </header>
 
-      <TaskFilters
-        filters={filters}
-        onUpdate={updateFilter}
-        onClear={() => setFilters(defaultFilters)}
-      />
+        <TaskForm
+          title={newTaskTitle}
+          setTitle={setNewTaskTitle}
+          onAdd={handleAddTask}
+          errors={fieldErrors}
+          priority={newTaskPriority}
+          setPriority={setNewTaskPriority}
+        />
 
-      {loading && <p>Loading...</p>}
+        <TaskFilters
+          filters={filters}
+          onUpdate={updateFilter}
+          onClear={() => setFilters(defaultFilters)}
+        />
 
-      <TaskList
-        tasks={tasks}
-        isFiltered={isFiltered}
-        confirmingId={confirmingId}
-        setConfirmingId={setConfirmingId}
-        onToggle={handleToggleComplete}
-        onDelete={handleDeleteTask}
-      />
+        {loading && <p>Loading...</p>}
 
+        <TaskList
+          tasks={tasks}
+          isFiltered={isFiltered}
+          confirmingId={confirmingId}
+          setConfirmingId={setConfirmingId}
+          onToggle={handleToggleComplete}
+          onDelete={handleDeleteTask}
+        />
+      </main>
     </div>
   );
 }
