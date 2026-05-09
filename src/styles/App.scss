@@ -1,0 +1,49 @@
+@import 'variables';
+
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 20px 20px;
+}
+
+.app-container {
+  width: 100%;
+  max-width: $container-width;
+  background-color: $bg-card;
+  padding: 40px;
+  border-radius: $radius * 2;
+  box-shadow: $shadow;
+  
+  &__header {
+    margin-bottom: 32px;
+    text-align: left; 
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: $text-main;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      color: $text-muted;
+      font-size: 14px;
+    }
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid $border;
+    margin: 32px 0;
+  }
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: $text-muted;
+  font-weight: 600;
+  font-style: italic;
+}
