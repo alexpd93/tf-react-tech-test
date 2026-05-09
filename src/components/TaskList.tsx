@@ -1,5 +1,6 @@
 import TaskItem from './TaskItem';
 import { Task } from '../types';
+import '../styles/TaskList.scss';
 
 interface Props {
     tasks: Task[];
@@ -11,22 +12,25 @@ interface Props {
 }
 
 const TaskList = ({ tasks, isFiltered, onToggle, onDelete, confirmingId, setConfirmingId }: Props) => {
-    // Handle Empty States inside the List component
+
     if (tasks.length === 0) {
         return isFiltered ? (
             <div id="tasks-empty-filtered" className="empty-state">
                 <p>No tasks match your filters.</p>
             </div>
         ) : (
-            <p id="tasks-empty-initial" className="empty-state">No tasks yet. Add one above!</p>
+            <div id="tasks-empty-initial" className="empty-state">
+                <p>No tasks yet. Add one above!</p>
+            </div>
         );
     }
 
-    // Handle the actual list rendering
     return (
-        <ul id="main-task-list"
+        <ul
+            id="main-task-list"
+            className="task-list"
             aria-label="Task list"
-            style={{ listStyle: 'none', padding: 0 }}>
+        >
             {tasks.map((task) => (
                 <TaskItem
                     key={task.id}
