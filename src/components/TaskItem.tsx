@@ -1,4 +1,5 @@
 import { Task } from "../types";
+import '../styles/TaskItem.scss';
 
 interface Props {
     task: Task;
@@ -15,33 +16,45 @@ const priorityConfig = {
 };
 
 const TaskItem = ({ task, onToggle, onDelete, confirmingId, setConfirmingId }: Props) => {
+    const isConfirming = confirmingId === task.id;
     const priorityInfo = task.priority ? priorityConfig[task.priority] : null;
 
     return (
-        <li key={task.id} id={`task-item-${task.id}`} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }
-        }>
-            <span style={{ textDecoration: task.completed ? 'line-through' : 'none', flex: 1 }}>
+        <li id={`task-item-${task.id}`} className="task-item">
+            {/* 1. Title Container */}
+            <span className={`task-item__title ${task.completed ? 'task-item__title--completed' : ''}`}>
                 {task.title}
             </span>
+
+            {/* 2. Priority Badge */}
             {priorityInfo && (
                 <span className={priorityInfo.className}>
                     {priorityInfo.icon} {priorityInfo.label}
                 </span>
             )}
-            <button id={`toggle-${task.id}`}
-                aria-label={task.completed ? "Mark task as incomplete" : "Mark task as complete"}
-                onClick={() => onToggle(task)}>
-                {task.completed ? 'Undo' : 'Complete'}
-            </button>
-            <button
-                id={`delete-${task.id}`} style={{
-                    backgroundColor: confirmingId === task.id ? '#e53e3e' : '',
-                    color: confirmingId === task.id ? 'white' : ''
-                }}
-                onMouseLeave={() => setConfirmingId(null)}
-                onClick={() => onDelete(task.id)}>{confirmingId === task.id ? 'Confirm Delete' : 'Delete'}</button>
-        </li >
+
+            {/* 3. Action Buttons */}
+            <div className="task-item__actions">
+                <button
+                    id={`toggle-${task.id}`}
+                    className="task-item__btn task-item__btn--toggle"
+                    aria-label={task.completed ? "Mark task as incomplete" : "Mark task as complete"}
+                    onClick={() => onToggle(task)}
+                >
+                    {task.completed ? 'Undo' : 'Complete'}
+                </button>
+
+                <button
+                    id={`delete-${task.id}`}
+                    className={`task-item__btn task-item__btn--delete ${isConfirming ? 'is-confirming' : ''}`}
+                    onMouseLeave={() => setConfirmingId(null)}
+                    onClick={() => onDelete(task.id)}
+                >
+                    {isConfirming ? 'Confirm Delete' : 'Delete'}
+                </button>
+            </div>
+        </li>
     );
 };
 
-export default TaskItem
+export default TaskItem;

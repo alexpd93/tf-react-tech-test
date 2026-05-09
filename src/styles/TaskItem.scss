@@ -1,0 +1,90 @@
+@import 'variables';
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background-color: white;
+  border: 1px solid $border;
+  border-radius: $radius;
+  transition: $transition;
+
+  &:hover {
+    border-color: lighten($primary, 20%);
+    transform: translateX(4px); 
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.03);
+  }
+
+  &__title {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    color: $text-main;
+    transition: $transition;
+
+    &--completed {
+      text-decoration: line-through;
+      color: $text-muted;
+      opacity: 0.7;
+    }
+  }
+
+  .priority-high, .priority-medium, .priority-low {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px; // Pill shape
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  .priority-high   { background-color: rgba($danger, 0.1); color: $danger; }
+  .priority-medium { background-color: rgba($warning, 0.1); color: darken($warning, 15%); }
+  .priority-low    { background-color: rgba($success, 0.1); color: $success; }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid transparent;
+
+    &--toggle {
+      background-color: rgba($primary, 0.08);
+      color: $primary;
+      &:hover { background-color: $primary; color: white; }
+    }
+
+    &--delete {
+      background-color: transparent;
+      color: $text-muted;
+
+      &:hover {
+        background-color: rgba($danger, 0.1);
+        color: $danger;
+      }
+
+      &.is-confirming {
+        background-color: $danger;
+        color: white;
+        border-color: darken($danger, 5%);
+        animation: pulse 1.5s infinite;
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
