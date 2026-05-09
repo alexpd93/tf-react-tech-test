@@ -1,0 +1,32 @@
+@import 'variables';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: $bg-app;
+  color: $text-main;
+  line-height: 1.5;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: $transition;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius;
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
