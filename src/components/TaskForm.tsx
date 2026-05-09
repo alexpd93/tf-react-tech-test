@@ -1,4 +1,5 @@
 import { Priority, ValidationError } from "../types";
+import '../styles/TaskForm.scss';
 
 interface TaskFormProps {
     title: string;
@@ -11,13 +12,14 @@ interface TaskFormProps {
 
 const TaskForm = ({ title, setTitle, priority, setPriority, onAdd, errors }: TaskFormProps) => {
     return (
-        <div style={{ marginBottom: 24 }}>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+        <div className="task-form">
+            <div className="task-form__row">
 
                 {/* 1. Task Title Section */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <label htmlFor="task-title-input" style={{ fontSize: '12px' }}>Task Title</label>
+                <div className="task-form__group">
+                    <label htmlFor="task-title-input">Task Title</label>
                     <input
+                        className={errors?.title ? 'is-invalid' : ''}
                         id="task-title-input"
                         type="text"
                         value={title}
@@ -25,12 +27,11 @@ const TaskForm = ({ title, setTitle, priority, setPriority, onAdd, errors }: Tas
                         placeholder="Add a new task..."
                         aria-invalid={!!errors?.title}
                         aria-describedby={errors?.title ? "task-title-error" : undefined}
-                        style={{ padding: '8px', border: errors?.title ? '2px solid red' : '1px solid #ccc' }}
                     />
                     {errors?.title && (
                         <span
+                            className="error-message"
                             id="task-title-error"
-                            style={{ color: 'red', fontSize: '12px', fontWeight: 'bold' }}
                         >
                             {errors.title}
                         </span>
@@ -38,15 +39,15 @@ const TaskForm = ({ title, setTitle, priority, setPriority, onAdd, errors }: Tas
                 </div>
 
                 {/* 2. Priority Selector Section */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    <label htmlFor="task-priority-select" style={{ fontSize: '12px' }}>Priority</label>
+                <div className="task-form__group task-form__group--small">
+                    <label htmlFor="task-priority-select">Priority</label>
                     <select
+                        className={errors?.priority ? 'is-invalid' : ''}
                         id="task-priority-select"
                         value={priority}
                         onChange={(e) => setPriority(e.target.value as Priority)}
                         aria-invalid={!!errors?.priority}
                         aria-describedby={errors?.priority ? "task-priority-error" : undefined}
-                        style={{ padding: '8px', border: errors?.priority ? '2px solid red' : '1px solid #ccc' }}
                     >
                         <option value="low">Low</option>
                         <option value="medium">Medium</option>
@@ -54,8 +55,8 @@ const TaskForm = ({ title, setTitle, priority, setPriority, onAdd, errors }: Tas
                     </select>
                     {errors?.priority && (
                         <span
+                            className="error-message"
                             id="task-priority-error"
-                            style={{ color: 'red', fontSize: '12px', fontWeight: 'bold' }}
                         >
                             {errors.priority}
                         </span>
@@ -63,15 +64,11 @@ const TaskForm = ({ title, setTitle, priority, setPriority, onAdd, errors }: Tas
                 </div>
 
                 {/* 3. The Submit Button */}
-                <button
-                    id="add-task-btn"
-                    onClick={onAdd}
-                    style={{ padding: '8px 16px', height: '38px', marginTop: '18px' }}
-                >
+                <button id="add-task-btn" className="add-btn" onClick={onAdd}>
                     Add
                 </button>
             </div>
-        </div>
+        </div >
     );
 };
 
