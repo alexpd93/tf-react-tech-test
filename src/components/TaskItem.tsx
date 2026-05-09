@@ -27,14 +27,16 @@ const TaskItem = ({ task, onToggle, onDelete, confirmingId, setConfirmingId }: P
             </span>
 
             {/* 2. Priority Badge */}
-            {priorityInfo && (
-                <span className={priorityInfo.className}>
-                    {priorityInfo.icon} {priorityInfo.label}
-                </span>
-            )}
+            <div className="task-item__priority-col">
+                {priorityInfo && (
+                    <span className={priorityInfo.className}>
+                        {priorityInfo.label}
+                    </span>
+                )}
+            </div>
 
             {/* 3. Action Buttons */}
-            <div className="task-item__actions">
+            <div className="task-item__actions-col">
                 <button
                     id={`toggle-${task.id}`}
                     className="task-item__btn task-item__btn--toggle"
