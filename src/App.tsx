@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import TaskForm from './components/TaskForm';
-import TaskFilters from './components//TaskFilters';
+import TaskFilters from './components/TaskFilters';
 import TaskList from './components/TaskList';
 import { Task, Priority, ValidationError } from './types';
 import { getTasks, createTask, updateTask, deleteTask } from './api';
@@ -23,6 +23,7 @@ function App() {
 
   // Fetch tasks on mount and when filters are applied
   const loadTasks = async () => {
+    setError(null);
     try {
       if (tasks.length === 0) setLoading(true);
       const priority = filters.priority === 'all' ? undefined : filters.priority;
@@ -86,7 +87,15 @@ function App() {
 
   const isFiltered = filters.priority !== defaultFilters.priority || filters.completed !== defaultFilters.completed;
 
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (loading && tasks.length === 0) {
+    return (
+      <div className="app-wrapper">
+        <main className="app-container">
+          <p className="loading-state">Loading your tasks...</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="app-wrapper">
@@ -95,6 +104,13 @@ function App() {
         <header className="app-container__header">
           <h1>Task Manager</h1>
         </header>
+
+        {error && (
+          <div className="app-error">
+            <p className="app-error__message">{error}</p>
+            <button className="app-error__retry" onClick={() => setError(null)}>Dismiss</button>
+          </div>
+        )}
 
         <TaskForm
           title={newTaskTitle}
@@ -110,8 +126,6 @@ function App() {
           onUpdate={updateFilter}
           onClear={() => setFilters(defaultFilters)}
         />
-
-        {loading && <p>Loading...</p>}
 
         <TaskList
           tasks={tasks}

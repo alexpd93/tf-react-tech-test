@@ -15,6 +15,47 @@
   border-radius: $radius * 2;
   box-shadow: $shadow;
   
+.app-error {
+  text-align: center;
+  padding: 32px;
+  background-color: rgba($danger, 0.05);
+  border: 1px solid rgba($danger, 0.1);
+  border-radius: $radius;
+  margin: 20px 0;
+
+  &__message {
+    color: $danger;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  &__retry {
+    background-color: white;
+    border: 1px solid $border;
+    padding: 8px 20px;
+    border-radius: $radius;
+    font-weight: 600;
+    color: $text-main;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: $danger;
+      color: white;
+      border-color: $danger;
+    }
+  }
+}
+
+.loading-state {
+  text-align: center;
+  padding: 60px 40px;
+  color: $text-muted;
+  font-weight: 600;
+  font-style: italic;
+}
+
   &__header {
     margin-bottom: 32px;
     text-align: left; 
