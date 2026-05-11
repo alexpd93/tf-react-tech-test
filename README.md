@@ -1,22 +1,71 @@
-# 🧪 JavaScript Developer Technical Test
+# 🚀 Task Manager - Technical Test Submission
 
-**Estimated Time:** ~2 hours  
-**Stack:** React · TypeScript · Node.js · Express.js  
-**Node Version:** 22.22.0 (see `.nvmrc`)
+This is a completed full-stack Task Manager application built for the technical test. It features a React/TypeScript frontend and a Node.js/Express backend, now enhanced with a persistent SQLite database using Prisma.
+
+## ✨ Features Implemented
+
+- **Full Persistence**: Moved from in-memory storage to a **SQLite** database via **Prisma ORM**.
+- **Task Management**: Create, toggle completion, and delete tasks.
+- **Priority System**: Tasks can be assigned `Low`, `Medium`, or `High` priority.
+- **Advanced Filtering**: Filter tasks by Priority and Completion status (server-side filtering).
+- **Robust Validation**: Field-specific error handling and visual feedback for the user.
+- **Modern UI**: Styled with **Sass**, featuring a clean, responsive layout and "Confirm Delete" safety checks.
+- **Type Safety**: End-to-end TypeScript implementation.
 
 ---
 
-## 👋 Welcome
+## 🛠️ Technical Stack
 
-This test is designed to give you a chance to show us how you think and build. There are no trick questions — we're genuinely interested in how you approach problems, how you structure your code, and how you handle the unexpected. Feel free to be creative!
+- **Frontend**: React (18), TypeScript, Vite, Sass.
+- **Backend**: Node.js (22), Express, tsx (for development).
+- **Database**: SQLite with Prisma ORM.
 
 ---
 
-## 📋 What You'll Be Building
+## 🚀 Getting Started
 
-A simple **Task Manager App** — a full-stack mini application with a React/TypeScript frontend and a Node.js/Express backend.
+### 1. Prerequisites
 
-Don't worry about making it look beautiful (though that's a bonus!) — we care more about how your code works and how you've structured it.
+- **Node.js**: Version `22.22.0` (as specified in `.nvmrc`).
+- **NVM** (recommended): To switch to the correct Node version.
+
+### 2. Installation
+
+```bash
+# 1. Switch to the correct Node version
+nvm use
+
+# 2. Install dependencies
+npm install
+
+# 3. Setup environment variables
+cp .env.example .env
+```
+
+### 3. Database Setup
+
+Since this project uses Prisma, you need to generate the client and ensure the database is synchronized:
+
+```bash
+# Generate the Prisma client
+npx prisma generate
+
+# (Optional) If starting fresh or changing schema:
+# npx prisma migrate dev
+```
+
+*Note: A `dev.db` file is included, but running `npx prisma generate` is required to create the local type definitions in `server/generated`.*
+
+### 4. Running the App
+
+You can run both the frontend and backend concurrently:
+
+```bash
+npm start
+```
+
+- **Frontend**: [http://localhost:5173](http://localhost:5173)
+- **Backend**: [http://localhost:3001](http://localhost:3001)
 
 ---
 
@@ -24,117 +73,23 @@ Don't worry about making it look beautiful (though that's a bonus!) — we care 
 
 ```
 tf-react-tech-test/
-├── src/
-│   ├── App.tsx              ← Main React component — start here for the frontend
-│   ├── types.ts             ← Shared TypeScript types — extend these as needed
-│   ├── api.ts               ← API helper functions — already wired up
-│   └── main.tsx             ← React entry point (no changes needed)
+├── prisma/             ← Database schema and migrations
 ├── server/
-│   └── index.ts             ← Express server — start here for the backend
-├── public/
-│   └── index.html
-├── tsconfig.app.json        ← TypeScript config for the frontend
-├── tsconfig.server.json     ← TypeScript config for the backend
-├── package.json
-├── .nvmrc                   ← Node version (22.22.0)
+│   ├── index.ts        ← Express server & API routes
+│   ├── db.ts           ← Prisma client initialization
+│   └── generated/      ← Generated Prisma client (ignore)
+├── src/
+│   ├── components/     ← Modular React components
+│   ├── styles/         ← Scoped Sass stylesheets
+│   ├── api.ts          ← Typed API helper functions
+│   ├── types.ts        ← Shared TypeScript interfaces
+│   └── App.tsx         ← Main application shell
+├── NOTES.md            ← Detailed development notes and future improvements
 └── README.md
 ```
 
 ---
 
-## ✅ Tasks
+## 📝 Developer Notes
 
-The app is **fully working** out of the box — once you run `npm start` you'll see a basic task manager in your browser connected to a live Express backend. Your job is to extend it.
-
-### Part 1 — Backend (Express + Node.js) ~45 mins
-
-Open `server/index.ts`. The four core routes are already implemented. Now make them better:
-
-- Add a `priority` field (`low` / `medium` / `high`) to tasks
-- Add a query param to filter tasks: `GET /api/tasks?priority=high` or `?completed=true`
-- Improve validation — what should happen if someone sends an empty title?
-- Add any other fields or endpoints you think would be useful
-
-> 💡 **Tip:** The `Task` interface and in-memory store are defined at the top of the file — extend them from there.
-
----
-
-### Part 2 — Frontend (React + TypeScript) ~45 mins
-
-Open `src/App.tsx`. The basic UI renders tasks and connects to the API. Make it genuinely useful:
-
-- Show task priority visually (colour, badge, icon — your choice)
-- Add a priority selector when creating a task
-- Add filtering or sorting (e.g. show only completed, sort by priority)
-- Improve the styling — make it look like something you'd actually want to use
-
-**Requirements:**
-- Use TypeScript properly — no `any` types please!
-- Keep using the types in `src/types.ts` — extend them if needed
-- Keep API calls going through `src/api.ts`
-
-> 💡 **Tip:** Feel free to create new component files under `src/` — you're not limited to `App.tsx`.
-
----
-
-### Part 3 — Your Call (~30 mins)
-
-Pick **one** of the following, or come up with your own idea:
-
-- **Optimistic UI updates** — update the UI before the server responds, roll back on error
-- **Persistence** — save tasks to `localStorage` so they survive a page refresh
-- **Filtering UI** — a proper filter bar (All / Active / Completed / by Priority)
-- **Something else entirely** — surprise us! Just tell us what and why in your `NOTES.md`
-
----
-
-## 🚀 Getting Started
-
-```bash
-# 1. Switch to the correct Node version (requires nvm)
-nvm install   # installs 22.22.0 from .nvmrc
-nvm use       # switches to 22.22.0
-
-# 2. Install dependencies
-npm install
-
-# 3. Run both frontend and backend together
-npm start
-```
-
-This will start:
-- **Frontend** (React + Vite) at `http://localhost:5173`
-- **Backend** (Express) at `http://localhost:3001`
-
-Or run them separately in two terminals:
-
-```bash
-# Terminal 1 — backend
-npm run server
-
-# Terminal 2 — frontend
-npm run dev
-```
-
-> ⚠️ **Node version:** This project requires **Node 22.22.0**. The `.nvmrc` file handles this automatically if you use [nvm](https://github.com/nvm-sh/nvm). If you use a different version manager (volta, asdf, fnm), a `.node-version` file is also included.
-
----
-
-## 📝 Please Create a NOTES.md File
-
-When you're done, add a `NOTES.md` to the root with a few sentences covering:
-
-1. What you built and any decisions you made
-2. What you'd improve with more time
-3. Anything you found tricky or interesting
-
-This helps us understand your thinking — it's just as important as the code!
-
----
-
-## 📦 Submitting
-
-Push your completed code to a **public GitHub repository** and send us the link.
-
-Good luck — we're rooting for you! 🎉
-# tf-react-tech-test
+For a detailed breakdown of architectural decisions, challenges faced, and what I would improve with more time, please see [NOTES.md](./NOTES.md).
