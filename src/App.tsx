@@ -1,7 +1,3 @@
-// src/App.tsx
-// This is your starting point. Build out the UI here.
-// You're welcome to split this into multiple components if you'd like!
-
 import { useState, useEffect } from 'react';
 import TaskForm from './components/TaskForm';
 import TaskFilters from './components//TaskFilters';
@@ -63,7 +59,6 @@ function App() {
     }
   };
 
-  // TODO: Expand this if you add extra fields to update
   const handleToggleComplete = async (task: Task) => {
     const updated = await updateTask(task.id, { completed: !task.completed });
     setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
