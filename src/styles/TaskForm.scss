@@ -1,4 +1,5 @@
-@import 'variables';
+@use "sass:color";
+@use 'variables' as *;
 
 $label-height: 20px;
 $label-gap: 6px;
@@ -44,7 +45,7 @@ $label-gap: 6px;
     width: 100%;
 
     &::placeholder {
-      color: lighten($text-muted, 15%);
+      color: color.adjust($text-muted, $lightness: 15%);
     }
 
     &:focus {
