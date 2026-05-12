@@ -44,17 +44,12 @@ cp .env.example .env
 
 ### 3. Database Setup
 
-Since this project uses Prisma, you need to generate the client and ensure the database is synchronized:
+To initialise the local database and ensure the client is synchronised with the schema, run the following command:
 
 ```bash
-# Generate the Prisma client
-npx prisma generate
-
-# (Optional) If starting fresh or changing schema:
-# npx prisma migrate dev
+# Initialise the SQLite database and generate the Prisma client
+npx prisma migrate dev
 ```
-
-*Note: A `dev.db` file is included, but running `npx prisma generate` is required to create the local type definitions in `server/generated`.*
 
 ### 4. Running the App
 
