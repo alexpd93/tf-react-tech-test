@@ -1,13 +1,3 @@
-// server/index.ts
-// This Express server is fully wired up and working.
-// The four core routes are implemented — run it and the frontend will connect straight away.
-//
-// TODO: This is where you can get creative!
-//   - Add a priority field to tasks (low / medium / high)
-//   - Add filtering: GET /api/tasks?priority=high or ?completed=true
-//   - Add input validation and better error messages
-//   - Anything else you think would make this better!
-
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import prisma from './db';
